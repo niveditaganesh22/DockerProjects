@@ -1,16 +1,26 @@
-
-
+#Get the Base Image
 FROM ubuntu:latest
+
+#Set the Arg to the repo to be cloned
 ARG REPO=https://github.com/bkrrajmali/helloworld.git
+
+#Perform package update and install java, maven and git and clone the repo
 RUN apt-get update && \
 apt-get install openjdk-11-jre-headless -y && \
 apt-get install maven -y && \
 apt-get install git -y && \
 git clone ${REPO}
+
+#Performing Maven Install
 WORKDIR /helloworld/webapp
 RUN mvn clean install
+
+#Running the webapp.war file
 WORKDIR /app
-#&& \
 RUN cp /helloworld/webapp/target/webapp.war /app/webapp.war
 #CMD ["java", "-jar", "my-app.jar"]
 ENTRYPOINT ["java", "-jar", "/app/webapp.war"]
+
+#ERROR
+#ubuntu@ip-172-31-15-253:~$ docker run -it --name ubuntu -p 8080:8080 project1:1.0
+#no main manifest attribute, in target/webapp.war
