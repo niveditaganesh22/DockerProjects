@@ -1,0 +1,21 @@
+FROM ubuntu:latest
+
+#Set the Arg to the repo to be cloned
+ARG REPO=https://github.com/jenkins-docs/simple-java-maven-app.git
+
+#Perform package update and install java, maven and git and clone the repo
+RUN apt-get update && \
+apt-get install openjdk-11-jre-headless -y && \
+apt-get install maven -y && \
+apt-get install git -y && \
+git clone ${REPO}
+
+#Performing Maven Install
+WORKDIR /simple-java-maven-app
+RUN mvn clean install
+
+
+WORKDIR /app
+RUN cp /simple-java-maven-app/target/*.jar /app/newapp.jar
+#CMD ["java", "-jar", "my-app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/newapp.jar"]
