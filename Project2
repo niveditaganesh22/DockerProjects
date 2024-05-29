@@ -1,5 +1,3 @@
-#STAGE-1
-
 #Get the Base Image
 FROM ubuntu:latest as stage1
 
@@ -17,20 +15,19 @@ git clone ${REPO}
 WORKDIR /helloworld/webapp
 RUN mvn clean install
 
-#Running the webapp.war file
-WORKDIR /app
-RUN cp /helloworld/webapp/target/webapp.war /app/webapp.war
 
 #STAGE-2
 
 #Get the Base Image
 FROM tomcat:10.1.24-jre11-temurin
 
+EXPOSE 8080
+
 #Set the work directory to Tomcat
 WORKDIR /usr/local/tomcat
 
+#Copying war file from stage1 to /webapps folder in here
+COPY --from=stage1 /helloworld/webapp/target/webapp.war /usr/local/tomcat/webapps
+
 #Copying files from webapps.dist to webapps
 RUN cp -r webapps.dist/* webapps/
-
-#Copying war file from stage1 to webapps folder in here
-COPY --from=stage1 /app/webapp.war usr/local/tomcat/webapps
