@@ -1,5 +1,5 @@
 #Get the Base Image
-FROM ubuntu:latest
+FROM tomcat
 
 #Set the Arg to the repo to be cloned
 ARG REPO=https://github.com/bkrrajmali/helloworld.git
@@ -12,15 +12,13 @@ apt-get install git -y && \
 git clone ${REPO}
 
 #Performing Maven Install
-WORKDIR /helloworld/webapp
+WORKDIR /usr/local/tomcat/helloworld/webapp
+
 RUN mvn clean install
 
 #Running the webapp.war file
-WORKDIR /app
-RUN cp /helloworld/webapp/target/webapp.war /app/webapp.war
-#CMD ["java", "-jar", "my-app.jar"]
-ENTRYPOINT ["java", "-jar", "/app/webapp.war"]
+WORKDIR /usr/local/tomcat
+RUN cp helloworld/webapp/target/webapp.war webapps && \
+cp -r webapps.dist/* webapps
 
-#ERROR
-#ubuntu@ip-172-31-15-253:~$ docker run -it --name ubuntu -p 8080:8080 project1:1.0
-#no main manifest attribute, in target/webapp.war
+CMD ["catalina.sh", "run"]
